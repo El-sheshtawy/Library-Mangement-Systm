@@ -1,5 +1,7 @@
 <?php
 
+// app/Models/Permission.php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,13 +11,17 @@ class Permission extends Model
 {
     use HasFactory;
 
-    protected  $fillable = [
-        'name',
-        'description',
-    ];
+    protected $fillable = ['name', 'description'];
 
-    public  function roles()
+    // Roles that have this permission
+    public function roles()
     {
         return $this->belongsToMany(Role::class);
+    }
+
+    // Users that have this permission directly
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
     }
 }

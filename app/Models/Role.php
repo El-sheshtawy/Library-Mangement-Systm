@@ -9,16 +9,19 @@ class Role extends Model
 {
     use HasFactory;
 
-    protected  $fillable = [
-        'name',
-        'description',
-    ];
+    protected $fillable = ['name'];
 
+    public const ROLE_USER = 1;
+    public const ROLE_ADMIN = 2;
+    public const ROLE_MANAGER = 3;
+
+    // Users with this role
     public function users()
     {
-        return $this->belongsToMany(User::class);
+        return $this->hasMany(User::class);
     }
 
+    // Permissions associated with this role
     public function permissions()
     {
         return $this->belongsToMany(Permission::class);
