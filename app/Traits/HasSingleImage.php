@@ -16,8 +16,6 @@ trait HasSingleImage
      *
      * @return void
      */
-    // app/Traits/HasSingleImage.php
-
     public function registerMediaCollections(): void
     {
         $defaultImage = MediaConstants::DEFAULT_USER_IMAGE;
