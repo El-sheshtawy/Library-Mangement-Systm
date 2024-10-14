@@ -9,11 +9,13 @@ class Role extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'description'];
 
-    public const ROLE_USER = 1;
-    public const ROLE_ADMIN = 2;
-    public const ROLE_MANAGER = 3;
+    // Define role names as constants
+    public const ROLE_SUPER_ADMIN = 1;
+    public const ROLE_EDITOR = 2;
+    public const ROLE_USER = 3;
+    public const ROLE_GUEST = 4;
 
     // Users with this role
     public function users()

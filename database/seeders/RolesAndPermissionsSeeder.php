@@ -42,9 +42,9 @@ class RolesAndPermissionsSeeder extends Seeder
         }
 
         // Create roles
-        $userRole = Role::firstOrCreate(['name' => 'User']);
-        $adminRole = Role::firstOrCreate(['name' => 'Admin']);
-        $managerRole = Role::firstOrCreate(['name' => 'Manager']);
+        $userRole = Role::firstOrCreate(['name' => Role::ROLE_USER]);
+        $adminRole = Role::firstOrCreate(['name' => Role::ROLE_SUPER_ADMIN]);
+        $managerRole = Role::firstOrCreate(['name' => Role::ROLE_EDITOR]);
 
         // Assign permissions to roles
         $adminRole->permissions()->sync(Permission::all()->pluck('id')->toArray());
@@ -62,7 +62,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $admin = User::firstOrCreate(
             ['email' => 'admin@example.com'],
             [
-                'name' => 'Admin User',
+                'name' => Role::ROLE_SUPER_ADMIN,
                 'password' => Hash::make('password'),
                 'role_id' => $adminRole->id,
             ]

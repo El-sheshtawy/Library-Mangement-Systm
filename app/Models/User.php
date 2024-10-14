@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Traits\HasSingleImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\MediaLibrary\HasMedia;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasSingleImage;
 
     /**
      * The attributes that are mass assignable.
@@ -23,12 +24,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'email_verified_at',
-        'image',
+        'role_id',
         'token',
         'token_expiration',
         'is_active',
-        'role_id',
     ];
 
     /**
@@ -49,6 +48,15 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    // app/Models/User.php
+
+    protected static function booted()
+    {
+        static::deleting(function ($user) {
+            $user->clearMediaCollection('image');
+        });
+    }
 
     // Role relationship
     public function role(): BelongsTo
@@ -87,9 +95,9 @@ class User extends Authenticatable
     public function notifications()
     {
         return $this->belongsToMany(Notification::class)
-                    ->using(NotificationUser::class)
-                    ->withPivot('is_read', 'is_public', 'receiver_id')
-                    ->withTimestamps();
+            ->using(NotificationUser::class)
+            ->withPivot('is_read', 'is_public', 'receiver_id')
+            ->withTimestamps();
     }
 
     public function comments()

@@ -2,18 +2,19 @@
 
 namespace App\Models;
 
+use App\Traits\HasSingleImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
 
-class AuthorRequest extends Model
+class AuthorRequest extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, HasSingleImage;
 
     protected  $fillable = [
         'name',
         'biography',
         'birthdate',
-        'image',
         'user_id',
         'author_id',
         ];

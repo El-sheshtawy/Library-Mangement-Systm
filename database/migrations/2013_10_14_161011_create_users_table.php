@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('image')->nullable()->default('http://127.0.0.1:8000/assets/images/static/person.png');
             $table->string('token')->nullable();
             $table->timestamp('token_expiration')->nullable();
             $table->boolean('is_active')->default(false);

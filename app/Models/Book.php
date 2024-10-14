@@ -2,24 +2,25 @@
 
 namespace App\Models;
 
+use App\Traits\HasSingleImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
 
-class Book extends Model
+class Book extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, HasSingleImage, HasFactory;
 
-     protected $fillable = [
-        'title', 
-        'description', 
+    protected $fillable = [
+        'title',
+        'description',
         'file',
-        'publish', 
-        'cover_image', 
-        'size', 
-        'number_pages', 
-        'published_at', 
-        'is_approved', 
-        'lang', 
+        'publish',
+        'size',
+        'number_pages',
+        'published_at',
+        'is_approved',
+        'lang',
         'downloads_count',
         'views_count',
         'book_series_id',

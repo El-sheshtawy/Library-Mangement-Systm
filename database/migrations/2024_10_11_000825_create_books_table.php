@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('file');
-            $table->string('cover_image');
             $table->decimal('size', 8, 2)->nullable();
             $table->integer('number_pages')->nullable();
             $table->dateTime('published_at')->nullable();

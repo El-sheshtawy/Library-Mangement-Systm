@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->text('biography')->nullable();
             $table->date('birthdate')->nullable();
-            $table->string('image')->nullable()->default('http://127.0.0.1:8000/assets/images/static/person.png');
             $table->timestamps();
         });
     }
