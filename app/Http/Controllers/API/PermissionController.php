@@ -1,8 +1,11 @@
 <?php
 
+// app/Http/Controllers/API/PermissionController.php
+
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PermissionResource;
 use App\Models\Permission;
 use Illuminate\Http\Request;
 
@@ -22,7 +25,8 @@ class PermissionController extends Controller
     public function index()
     {
         $permissions = Permission::all();
-        return response()->json($permissions, 200);
+
+        return PermissionResource::collection($permissions)->response()->setStatusCode(200);
     }
 
     /**
@@ -37,7 +41,7 @@ class PermissionController extends Controller
 
         $permission = Permission::create($request->only(['name', 'description']));
 
-        return response()->json($permission, 201);
+        return new PermissionResource($permission);
     }
 
     /**
@@ -45,7 +49,7 @@ class PermissionController extends Controller
      */
     public function show(Permission $permission)
     {
-        return response()->json($permission, 200);
+        return new PermissionResource($permission);
     }
 
     /**
@@ -60,7 +64,7 @@ class PermissionController extends Controller
 
         $permission->update($request->only(['name', 'description']));
 
-        return response()->json($permission, 200);
+        return new PermissionResource($permission);
     }
 
     /**

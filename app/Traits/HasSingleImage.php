@@ -18,16 +18,13 @@ trait HasSingleImage
      */
     public function registerMediaCollections(): void
     {
-        $defaultImage = MediaConstants::DEFAULT_USER_IMAGE;
-
         $this
-            ->addMediaCollection(MediaConstants::MEDIA_COLLECTION_IMAGE)
+            ->addMediaCollection('image')
             ->singleFile()
-            ->useFallbackUrl($defaultImage)
-            ->useFallbackPath(public_path($defaultImage))
-            ->useDisk('private'); // Define a 'private' disk in config/filesystems.php
+            ->useFallbackUrl('/assets/images/static/person.png')
+            ->useFallbackPath(public_path('/assets/images/static/person.png'))
+            ->useDisk('public'); // or 'private' based on needs
     }
-
 
     /**
      * Define media conversions.

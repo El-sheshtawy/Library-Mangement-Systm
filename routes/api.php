@@ -2,9 +2,9 @@
 
 use App\Http\Controllers\API\PermissionController;
 use App\Http\Controllers\API\RoleController;
+use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Users\UserController;
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -18,14 +18,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     | -  User Routes
     |------------------------------------------------------------------
      */
-    Route::prefix('users')->group(function () {
-        Route::get('/', [UserController::class, 'index'])->middleware('permission:view-users');
-        Route::get('/{user}', [UserController::class, 'show'])->middleware('permission:view-users');
-        Route::post('/', [UserController::class, 'store'])->middleware('permission:create-user');
-        Route::put('/{user}', [UserController::class, 'update'])->middleware('permission:edit-user');
-        Route::delete('/{user}', [UserController::class, 'destroy'])->middleware('permission:delete-user');
-    });
-
 // Protected Routes
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -44,8 +36,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('users/{user}/permissions', [UserController::class, 'assignPermissions'])
         ->name('users.assignPermissions');
 });
-
-
 
 
 require __DIR__.'/site.php';

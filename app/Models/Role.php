@@ -1,5 +1,7 @@
 <?php
 
+// app/Models/Role.php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,23 +11,25 @@ class Role extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description'];
+    const ROLE_USER = 'User';
+    const ROLE_SUPER_ADMIN = 'Super Admin';
+    const ROLE_EDITOR = 'Editor';
 
-    // Define role names as constants
-    public const ROLE_SUPER_ADMIN = 1;
-    public const ROLE_EDITOR = 2;
-    public const ROLE_USER = 3;
-    public const ROLE_GUEST = 4;
+    protected $fillable = ['name', 'description', 'level'];
 
-    // Users with this role
+    /**
+     * The permissions that belong to the role.
+     */
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'role_permission')->withTimestamps();
+    }
+
+    /**
+     * The users that belong to the role.
+     */
     public function users()
     {
         return $this->hasMany(User::class);
-    }
-
-    // Permissions associated with this role
-    public function permissions()
-    {
-        return $this->belongsToMany(Permission::class);
     }
 }

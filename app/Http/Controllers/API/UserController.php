@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Resources\UserResource;
 
 class UserController extends Controller
 {
@@ -19,30 +20,38 @@ class UserController extends Controller
     }
 
     /**
-     * Display a listing of the users.
+     * Display a listing of the users with search and filter capabilities.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with(['role', 'permissions'])->get();
-        return response()->json($users, 200);
+        // Initialize the query with eager loading of 'role' and 'permissions'
+        $query = User::with('role');
+
+        // Handle search by name using scope
+        if ($request->has('search')) {
+            $searchTerm = $request->input('search');
+            $query->searchByName($searchTerm);
+        }
+
+        // Handle filter by role using scope
+        if ($request->has('role_id')) {
+            $roleId = $request->input('role_id');
+            $query->filterByRole($roleId);
+        }
+
+        // Handle pagination parameters
+        $perPage = $request->input('per_page', 10); // Default to 10 per page
+        $users = $query->paginate($perPage);
+
+        // Return paginated user resources
+        return UserResource::collection($users)->response()->setStatusCode(200);
     }
 
     /**
      * Store a newly created user, including image upload.
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        // Validate incoming request
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
-            'role_id' => 'required|exists:roles,id',
-            'permissions' => 'array', // Array of permission IDs
-            'permissions.*' => 'exists:permissions,id',
-            'image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // New validation rule
-        ]);
-
         // Create the user
         $user = User::create([
             'name' => $request->name,
@@ -66,8 +75,8 @@ class UserController extends Controller
         // Load relationships and media
         $user->load(['role', 'permissions', 'media']);
 
-        // Return the created user with relationships and media
-        return response()->json($user, 201);
+        // Return the created user as a resource
+        return (new UserResource($user))->response()->setStatusCode(201);
     }
 
     /**
@@ -75,26 +84,29 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return response()->json($user->load(['role', 'permissions']), 200);
+        $user->load(['role', 'permissions', 'media']);
+        $user->image_url = $user->getImageUrl();
+        return new UserResource($user);
     }
 
-    /**
-     * Update the specified user.
-     */
-    // app/Http/Controllers/API/UserController.php
 
+    /**
+     * Update the specified user, including image upload.
+     */
     public function update(Request $request, User $user)
     {
+        // Authorize the update action
         $this->authorize('update', $user);
 
+        // Validate the request
         $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
             'password' => 'sometimes|nullable|string|min:6',
-            'role_name' => 'sometimes|required|string|exists:roles,name',
+            'role_id' => 'sometimes|required|exists:roles,id', // Changed from 'role_name' to 'role_id' for consistency
             'permissions' => 'array',
             'permissions.*' => 'exists:permissions,id',
-            'image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validation for image
+            'image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         // Update user attributes
@@ -103,10 +115,8 @@ class UserController extends Controller
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
-        if ($request->has('role_name')) {
-            $roleName = $request->role_name;
-            $role = Role::where('name', $roleName)->firstOrFail();
-            $user->role()->associate($role);
+        if ($request->has('role_id')) {
+            $user->role_id = $request->role_id;
         }
         $user->save();
 
@@ -122,7 +132,11 @@ class UserController extends Controller
                 ->toMediaCollection('image');
         }
 
-        return response()->json($user->load(['role', 'permissions', 'media']), 200);
+        // Load relationships and media
+        $user->load(['role', 'permissions', 'media']);
+
+        // Return the updated user as a resource
+        return new UserResource($user);
     }
 
     /**
@@ -135,6 +149,7 @@ class UserController extends Controller
             return response()->json(['message' => 'You cannot delete yourself.'], 403);
         }
 
+        // Detach permissions and delete user
         $user->permissions()->detach();
         $user->delete();
 
@@ -152,6 +167,9 @@ class UserController extends Controller
 
         $user->role_id = $request->role_id;
         $user->save();
+
+        // Optionally, sync permissions based on the new role
+        // $user->permissions()->sync($user->role->permissions->pluck('id')->toArray());
 
         return response()->json($user->load('role'), 200);
     }

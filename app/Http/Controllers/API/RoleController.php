@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\RoleResource;
 use App\Models\Role;
 use Illuminate\Http\Request;
 
@@ -21,8 +22,9 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::with('permissions')->get();
-        return response()->json($roles, 200);
+        $roles = Role::withCount('permissions')->get(); // Retrieve roles with permissions count
+
+        return RoleResource::collection($roles)->response()->setStatusCode(200);
     }
 
     /**
@@ -32,17 +34,20 @@ class RoleController extends Controller
     {
         $request->validate([
             'name' => 'required|unique:roles,name',
+            'description' => 'nullable|string',
             'permissions' => 'array', // Array of permission IDs
             'permissions.*' => 'exists:permissions,id',
         ]);
 
-        $role = Role::create($request->only(['name']));
+        $role = Role::create($request->only(['name', 'description']));
 
         if ($request->has('permissions')) {
             $role->permissions()->attach($request->permissions);
         }
 
-        return response()->json($role->load('permissions'), 201);
+        $role->load('permissions');
+
+        return new RoleResource($role);
     }
 
     /**
@@ -51,7 +56,8 @@ class RoleController extends Controller
     public function show(Role $role)
     {
         $role->load('permissions');
-        return response()->json($role, 200);
+
+        return new RoleResource($role);
     }
 
     /**
@@ -61,17 +67,20 @@ class RoleController extends Controller
     {
         $request->validate([
             'name' => 'sometimes|required|unique:roles,name,' . $role->id,
+            'description' => 'nullable|string',
             'permissions' => 'array',
             'permissions.*' => 'exists:permissions,id',
         ]);
 
-        $role->update($request->only(['name']));
+        $role->update($request->only(['name', 'description']));
 
         if ($request->has('permissions')) {
             $role->permissions()->sync($request->permissions);
         }
 
-        return response()->json($role->load('permissions'), 200);
+        $role->load('permissions');
+
+        return new RoleResource($role);
     }
 
     /**
@@ -96,6 +105,8 @@ class RoleController extends Controller
 
         $role->permissions()->sync($request->permissions);
 
-        return response()->json($role->load('permissions'), 200);
+        $role->load('permissions');
+
+        return new RoleResource($role);
     }
 }

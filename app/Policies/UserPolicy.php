@@ -30,6 +30,7 @@ class UserPolicy
      */
     public function create(User $user)
     {
+        // User can create new users only if they have permission and their level is higher than or equal to the new user's role level
         return $user->hasPermission('create-user');
     }
 
@@ -38,7 +39,8 @@ class UserPolicy
      */
     public function update(User $user, User $model)
     {
-        return $user->hasPermission('update-user') || $user->id === $model->id;
+        // Prevent updates if the target user has a higher role level
+        return ($user->hasPermission('update-user') && $user->role->level >= $model->role->level) || $user->id === $model->id;
     }
 
     /**
@@ -46,8 +48,8 @@ class UserPolicy
      */
     public function delete(User $user, User $model)
     {
-        // Prevent users from deleting themselves
-        return $user->hasPermission('delete-user') && $user->id !== $model->id;
+        // Prevent users from deleting themselves or deleting users with higher role levels
+        return $user->hasPermission('delete-user') && $user->id !== $model->id && $user->role->level >= $model->role->level;
     }
 
     /**
@@ -55,7 +57,8 @@ class UserPolicy
      */
     public function assignRole(User $user, User $model)
     {
-        return $user->hasPermission('assign-role');
+        // Only allow assigning roles with a level lower or equal to the current user's role level
+        return $user->hasPermission('assign-role') && $user->role->level >= $model->role->level;
     }
 
     /**
@@ -63,6 +66,7 @@ class UserPolicy
      */
     public function assignPermissions(User $user, User $model)
     {
-        return $user->hasPermission('assign-permissions');
+        // Only allow assigning permissions if user has permission and they are not assigning permissions to a higher-level user
+        return $user->hasPermission('assign-permissions') && $user->role->level >= $model->role->level;
     }
 }

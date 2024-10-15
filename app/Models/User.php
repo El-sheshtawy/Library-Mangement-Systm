@@ -49,7 +49,18 @@ class User extends Authenticatable implements HasMedia
         'email_verified_at' => 'datetime',
     ];
 
-    // app/Models/User.php
+    protected $appends = ['image_url'];
+
+    /**
+     * Get the image URL attribute.
+     *
+     * @return string
+     */
+    public function getImageUrlAttribute(): string
+    {
+        return $this->getImageUrl(); // Uses the method from HasSingleImage trait
+    }
+
 
     protected static function booted()
     {
@@ -67,7 +78,7 @@ class User extends Authenticatable implements HasMedia
     // Permissions directly assigned to the user
     public function permissions(): BelongsToMany
     {
-        return $this->belongsToMany(Permission::class);
+        return $this->belongsToMany(Permission::class, 'user_permission');
     }
 
     // Check if user has a specific permission
@@ -82,6 +93,30 @@ class User extends Authenticatable implements HasMedia
         return $this->role->permissions()->where('name', $permission)->exists();
     }
 
+    /**
+     * Scope a query to search users by name.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $searchTerm
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSearchByName($query, $searchTerm)
+    {
+        return $query->where('name', 'LIKE', '%' . $searchTerm . '%');
+    }
+
+    /**
+     * Scope a query to filter users by role.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param int $roleId
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByRole($query, $roleId)
+    {
+        return $query->where('role_id', $roleId);
+    }
+
     public function books()
     {
         return $this->hasMany(Book::class);
@@ -90,14 +125,6 @@ class User extends Authenticatable implements HasMedia
     public  function authorRequest()
     {
         return $this->hasMany(AuthorRequest::class);
-    }
-
-    public function notifications()
-    {
-        return $this->belongsToMany(Notification::class)
-            ->using(NotificationUser::class)
-            ->withPivot('is_read', 'is_public', 'receiver_id')
-            ->withTimestamps();
     }
 
     public function comments()
