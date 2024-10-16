@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             CategoryGroupsSeeder::class,
             CategorySeeder::class,
             AuthorSeeder::class,
+            BookSeriesSeeder::class,
             BooksSeeder::class,
             CommentsSeeder::class,
         ]);

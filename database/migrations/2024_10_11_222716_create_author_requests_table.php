@@ -16,8 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->text('biography')->nullable();
             $table->date('birthdate')->nullable();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('author_id')->constrained('authors')->onDelete('cascade')->onUpdate('cascade');
+            // $table->string('image')->nullable();
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('author_id')->nullable()->constrained('authors')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

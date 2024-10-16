@@ -6,9 +6,15 @@ namespace App\Providers;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\CategoryGroup;
+use App\Models\BookSeries;
 use App\Policies\PermissionPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
+use App\Policies\CategoryPolicy;
+use App\Policies\BookSeriesPolicy;
+use App\Models\AuthorRequest;
+use App\Policies\AuthorRequestPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -22,6 +28,9 @@ class AuthServiceProvider extends ServiceProvider
         Role::class => RolePolicy::class,
         Permission::class => PermissionPolicy::class,
         User::class => UserPolicy::class,
+        CategoryGroup::class => CategoryPolicy::class,
+        BookSeries::class => BookSeriesPolicy::class,
+        AuthorRequest::class => AuthorRequestPolicy::class,
     ];
 
     /**

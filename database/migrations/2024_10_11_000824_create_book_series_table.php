@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('book_series', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->string('title'); 
             $table->text('description')->nullable();
+            // $table->string('image')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             $table->timestamps();
         });
     }
