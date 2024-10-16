@@ -19,7 +19,8 @@ class AuthorResource extends JsonResource
             'name' => $this->name,
             'biography' => $this->biography,
             'birthdate' => $this->birthdate,
-            'image' => $this->hasMedia('author_requests') ? $this->getFirstMediaUrl('author_requests') : $this->getFirstMediaUrl('author'), 
+            'image' => $this->hasMedia('authors') ? $this->getFirstMediaUrl('authors') :null, 
+            'copyrights' => $this->hasMedia('author_copyrights') ? $this->getFirstMediaUrl('author_copyrights') :null, 
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             // 'books' => $this->books->map(function ($book) {
