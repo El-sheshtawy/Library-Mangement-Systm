@@ -2,19 +2,17 @@
 
 namespace App\Models;
 
-use App\Traits\HasSingleImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
 
-class PublicationRequest extends Model implements HasMedia
+class PublicationRequest extends Model
 {
-    use HasFactory, HasSingleImage;
+    use HasFactory;
 
     protected  $fillable = [
         'publish',
         'status',
+        'copyright_image',
         'user_id',
         'book_id',
     ];

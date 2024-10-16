@@ -34,6 +34,40 @@ class RolesAndPermissionsSeeder extends Seeder
             'delete-user',
             'assign-role',
             'assign-permissions',
+
+            // Books
+            'view-books',
+            'create-book',
+            'update-book',
+            'delete-book',
+
+            // Categories
+            'view-categories',
+            'create-category',
+            'update-category',
+            'delete-category',
+
+            // Publications
+            'manage-publications',
+
+            // Authors
+            'manage-author',
+
+            // Comments
+            'view-comments',
+            'create-comment',
+            'update-comment',
+            'delete-comment',
+
+            // Notifications
+            'view-notifications',
+            'create-notification',
+            'update-notification',
+            'delete-notification',
+
+            // Downloads
+            'download-book',
+            'view-downloads',
         ];
 
         // Create permissions
