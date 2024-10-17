@@ -54,7 +54,7 @@ class HomePageController extends Controller
                             break;
                     }
                 })
-                ->paginate(12);
+                ->paginate(12); 
         });
 
         return BookResource::collection($books);
