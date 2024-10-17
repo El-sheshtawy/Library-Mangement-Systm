@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AuthorController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\HomePageController;
 use App\Http\Controllers\API\PermissionController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\UserController;
@@ -22,6 +23,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
 // Protected Routes
 Route::middleware('auth:sanctum')->group(function () {
+
+    // Home Page Route
+    Route::get('/', HomePageController::class);
 
     // Permissions Routes
     Route::apiResource('permissions', PermissionController::class);

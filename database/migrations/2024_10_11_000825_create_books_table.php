@@ -15,9 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->string('file')->nullable();
-            $table->decimal('size', 8, 2)->nullable();
-            $table->integer('number_pages')->nullable();
             $table->dateTime('published_at')->nullable();
             $table->boolean('is_approved')->default(false);
             $table->integer('views_count')->default(0);

@@ -2,22 +2,19 @@
 
 namespace App\Models;
 
-use App\Traits\HasSingleImage;
+use App\Traits\HasImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 
 class Book extends Model implements HasMedia
 {
-    use HasFactory, HasSingleImage, HasFactory;
+    use HasFactory, HasImage;
 
     protected $fillable = [
         'title',
         'description',
-        'file',
-        'publish',
-        'size',
-        'number_pages',
+        'publisher_name',
         'published_at',
         'is_approved',
         'lang',
@@ -29,6 +26,7 @@ class Book extends Model implements HasMedia
         'author_id',
     ];
 
+    // Relationships
     public function comments()
     {
         return $this->hasMany(Comment::class);
@@ -54,9 +52,23 @@ class Book extends Model implements HasMedia
         return $this->hasOne(PublicationRequest::class);
     }
 
-    public  function author()
+    public function author()
     {
         return $this->belongsTo(Author::class);
     }
 
+    /**
+     * Register media collections for Spatie's Media Library.
+     */
+    public function registerMediaCollections(): void
+    {
+        // Register the cover image collection
+        $this->addMediaCollection('cover_image')
+            ->singleFile(); // Only one cover image can be uploaded
+
+        // Register the file (PDF) collection
+        $this->addMediaCollection('file')
+            ->useDisk('public')  // Define the disk to use
+            ->singleFile();  // Only one file can be uploaded
+    }
 }
