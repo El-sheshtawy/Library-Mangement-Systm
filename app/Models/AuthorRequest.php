@@ -2,21 +2,21 @@
 
 namespace App\Models;
 
+use App\Traits\HasImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
 
 class AuthorRequest extends Model implements HasMedia
 {
-    use InteractsWithMedia, HasFactory;
+    use HasImage, HasFactory;
 
     protected $fillable = [
         'name',
         'biography',
         'birthdate',
-        'status',
         'user_id',
+        'status',
         'author_id',
     ];
 
@@ -30,11 +30,33 @@ class AuthorRequest extends Model implements HasMedia
         return $this->belongsTo(Author::class);
     }
 
+    /**
+     * Register media collections for AuthorRequest.
+     */
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('author_requests') 
-            ->singleFile(); 
-        $this->addMediaCollection('copyright') 
-            ->singleFile(); 
+        $collections = [
+            [
+                'name' => 'profile_image',
+                'single' => true,
+                'fallback_url' => url('/assets/images/static/person.png'),
+                'fallback_path' => public_path('/assets/images/static/person.png'),
+                'disk' => 'public',
+            ],
+            [
+                'name' => 'cover_image',
+                'single' => true,
+                'fallback_url' => url('/assets/images/static/cover.png'),
+                'fallback_path' => public_path('/assets/images/static/cover.png'),
+                'disk' => 'public',
+            ],
+            [
+                'name' => 'copyright',
+                'single' => false,
+                'disk' => 'public',
+            ],
+        ];
+
+        $this->registerMediaCollections($collections);
     }
 }

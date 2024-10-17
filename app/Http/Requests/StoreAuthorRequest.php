@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreAuthorRequest extends FormRequest
 {
@@ -11,7 +12,8 @@ class StoreAuthorRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // Allow only authenticated users to create/update author requests
+        return Auth::check();
     }
 
     /**
@@ -22,10 +24,12 @@ class StoreAuthorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|unique:authors,name|max:255',
+            'name' => 'required|string|unique:authors,name,' . $this->route('id') . '|max:255',
             'biography' => 'nullable|string',
             'birthdate' => 'nullable|date',
-            'image' => 'nullable|image', 
+            'profile_image' => 'nullable|image|max:2048',
+            'cover_image' => 'nullable|image|max:2048',
         ];
     }
 }
+

@@ -25,7 +25,8 @@ class UpdateAuthorRequest extends FormRequest
             'name' => 'sometimes|required|string|unique:authors,name,' . $this->route('author')->id . '|max:255',
             'biography' => 'sometimes|nullable|string',
             'birthdate' => 'sometimes|nullable|date',
-            'image' => 'sometimes|nullable|image', 
+            'profile_image' => 'nullable|image|max:2048',
+            'cover_image' => 'nullable|image|max:2048',
         ];
     }
 }

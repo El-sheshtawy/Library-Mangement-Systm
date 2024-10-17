@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\RoleResource;
 use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RoleController extends Controller
 {
@@ -14,6 +15,11 @@ class RoleController extends Controller
      */
     public function __construct()
     {
+        // Simulate user login for testing purposes
+        // Remove or modify this in production
+        if (app()->environment('local')) {
+            Auth::loginUsingId(1);
+        }
         $this->authorizeResource(Role::class, 'role');
     }
 

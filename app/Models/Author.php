@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Author extends Model implements HasMedia
 {
-    use InteractsWithMedia, HasFactory;
+    use HasImage, HasFactory;
 
     protected $fillable = [
         'name',
@@ -27,11 +27,25 @@ class Author extends Model implements HasMedia
         return $this->hasMany(AuthorRequest::class);
     }
 
+    /**
+     * Register media collections for Author.
+     */
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('authors') 
-            ->singleFile(); 
-        $this->addMediaCollection('author_copyrights') 
-            ->singleFile(); 
+        // Profile Image
+        $this->registerImageCollection(
+            'profile_image',
+            true,
+            url('/assets/images/static/person.png'),
+            public_path('/assets/images/static/person.png')
+        );
+
+        // Additional Image Collection (e.g., Cover Image)
+        $this->registerImageCollection(
+            'cover_image',
+            true,
+            url('/assets/images/static/cover.png'),
+            public_path('/assets/images/static/cover.png')
+        );
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Resources\UserResource;
@@ -16,6 +17,11 @@ class UserController extends Controller
      */
     public function __construct()
     {
+        // Simulate user login for testing purposes
+        // Remove or modify this in production
+        if (app()->environment('local')) {
+            Auth::loginUsingId(1);
+        }
         $this->authorizeResource(User::class, 'user');
     }
 

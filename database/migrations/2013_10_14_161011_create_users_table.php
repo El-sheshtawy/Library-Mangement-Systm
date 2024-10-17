@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->index(); // Add index
+            $table->string('name')->index(); // Add index for search optimization
             $table->foreignId('role_id')->default(\App\Models\Role::ROLE_USER)->constrained();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();

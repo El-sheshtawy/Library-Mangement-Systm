@@ -2,34 +2,28 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class AuthorResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray($request)
     {
-         return [
+        return [
             'id' => $this->id,
             'name' => $this->name,
             'biography' => $this->biography,
             'birthdate' => $this->birthdate,
-            'image' => $this->hasMedia('authors') ? $this->getFirstMediaUrl('authors') :null, 
-            'copyrights' => $this->hasMedia('author_copyrights') ? $this->getFirstMediaUrl('author_copyrights') :null, 
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
-            // 'books' => $this->books->map(function ($book) {
-            //     return [
-            //         'id' => $book->id,
-            //         'title' => $book->title,
-            //         'image_url' => $book->getFirstMediaUrl('images'), 
-            //     ];
-            // }),
+            'books' => BookResource::collection($this->whenLoaded('books')),
+            'media' => [
+                'profile_image' => $this->getImageUrl('profile_image', 'medium'),
+                'cover_image' => $this->getImageUrl('cover_image', 'large'),
+                // Add other media URLs as needed
+            ],
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

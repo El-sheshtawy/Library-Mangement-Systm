@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasImage;
 use App\Traits\HasSingleImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +14,7 @@ use Spatie\MediaLibrary\HasMedia;
 
 class User extends Authenticatable implements HasMedia
 {
-    use HasApiTokens, HasFactory, Notifiable, HasSingleImage;
+    use HasApiTokens, HasFactory, Notifiable, HasImage;
 
     /**
      * The attributes that are mass assignable.
@@ -52,15 +53,26 @@ class User extends Authenticatable implements HasMedia
     protected $appends = ['image_url'];
 
     /**
-     * Get the image URL attribute.
-     *
-     * @return string
+     * Register media collections for User.
+     */
+    public function registerMediaCollections(): void
+    {
+        // Profile Image
+        $this->registerImageCollection(
+            'profile_image',
+            true,
+            url('/assets/images/static/user.png'),
+            public_path('/assets/images/static/user.png')
+        );
+    }
+
+    /**
+     * Accessor for image URL.
      */
     public function getImageUrlAttribute(): string
     {
-        return $this->getImageUrl(); // Uses the method from HasSingleImage trait
+        return $this->getImageUrl('profile_image');
     }
-
 
     protected static function booted()
     {

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\API\AuthorController;
+use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\PermissionController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\UserController;
@@ -35,8 +37,20 @@ Route::middleware('auth:sanctum')->group(function () {
         ->name('users.assignRole');
     Route::post('users/{user}/permissions', [UserController::class, 'assignPermissions'])
         ->name('users.assignPermissions');
-});
 
+    // Use apiResource for Category
+    Route::apiResource('categories', CategoryController::class);
+
+    // Use apiResource for CategoryGroup
+    Route::apiResource('category-groups', CategoryController::class);
+
+    // Add any additional routes here
+    Route::get('category-groups', [CategoryController::class, 'categoryGroups']);
+
+    // Add apiResource for author
+    Route::apiResource('authors', AuthorController::class);
+
+});
 
 require __DIR__.'/site.php';
 require __DIR__.'/auth.php';
