@@ -1,16 +1,15 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\Books\BookSeriesController;
+use App\Http\Controllers\API\BookSeriesController;
 use App\Http\Controllers\Author\AuthorController;
+use App\Http\Controllers\CategoryController;
+use Illuminate\Support\Facades\Route;
 
-    /*
-    |------------------------------------------------------------------
-    | -  Category Routes
-    |------------------------------------------------------------------
-     */
+/*
+|------------------------------------------------------------------
+| -  Category Routes
+|------------------------------------------------------------------
+ */
     Route::prefix('categories')->group(function () {
         Route::get('/', [CategoryController::class, 'index'])->middleware('permission:view-categories');
         Route::get('/{category}', [CategoryController::class, 'show'])->middleware('permission:view-categories');
@@ -54,14 +53,14 @@ use App\Http\Controllers\Author\AuthorController;
   */
   Route::prefix('author-requests')->group(function () {
       Route::get('/', [AuthorController::class, 'listRequests']);
-      Route::post('/create', [AuthorController::class, 'requestAuthor'])->middleware('permission:create-book'); 
+      Route::post('/create', [AuthorController::class, 'requestAuthor'])->middleware('permission:create-book');
       Route::post('/{id}/handle', [AuthorController::class, 'handleRequest']);
-      Route::post('/{id}/update', [AuthorController::class, 'updateAuthorRequest'])->middleware('permission:edit-book'); 
+      Route::post('/{id}/update', [AuthorController::class, 'updateAuthorRequest'])->middleware('permission:edit-book');
       Route::post('/{id}/handle-update', [AuthorController::class, 'handleUpdateRequest']);
   });
 
   Route::prefix('authors')->group(function () {
-      Route::get('/', [AuthorController::class, 'index']); 
-      Route::get('/{author}', [AuthorController::class, 'show']); 
+      Route::get('/', [AuthorController::class, 'index']);
+      Route::get('/{author}', [AuthorController::class, 'show']);
       Route::delete('/{id}', [AuthorController::class, 'delete']);
   });

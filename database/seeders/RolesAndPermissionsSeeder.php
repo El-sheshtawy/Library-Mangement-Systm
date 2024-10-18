@@ -37,9 +37,9 @@ class RolesAndPermissionsSeeder extends Seeder
 
             // Books
             'view-books',
-            'create-book',
-            'update-book',
-            'delete-book',
+            'create-books',
+            'update-books',
+            'delete-books',
 
             // Categories
             'view-categories',
@@ -58,12 +58,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'create-comment',
             'update-comment',
             'delete-comment',
-
-            // Notifications
-            'view-notifications',
-            'create-notification',
-            'update-notification',
-            'delete-notification',
 
             // Downloads
             'download-book',

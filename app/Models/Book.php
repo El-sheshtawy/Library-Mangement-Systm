@@ -68,7 +68,7 @@ class Book extends Model implements HasMedia
 
         // Register the file (PDF) collection
         $this->addMediaCollection('file')
-            ->useDisk('public')  // Define the disk to use
-            ->singleFile();  // Only one file can be uploaded
+            ->useDisk('public') // Store files in the public disk
+            ->singleFile(); // Only one file can be uploaded
     }
 }

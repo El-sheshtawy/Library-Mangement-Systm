@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Books;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BookSeriesResource;
 use App\Models\BookSeries;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Http\Resources\BookSeriesResource;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -54,9 +54,6 @@ class BookSeriesController extends Controller
             $validated['user_id'] = Auth::id();
             $bookSeries = BookSeries::create($validated);
 
-            if ($request->hasFile('image')) {
-                $bookSeries->addMedia($request->file('image'))->toMediaCollection('images');
-            }
 
             return new BookSeriesResource($bookSeries, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
@@ -80,10 +77,6 @@ class BookSeriesController extends Controller
 
             $bookSeries->update($validated);
 
-            if ($request->hasFile('image')) {
-                $bookSeries->clearMediaCollection('images');
-                $bookSeries->addMedia($request->file('image'))->toMediaCollection('images');
-            }
 
             return new BookSeriesResource($bookSeries);
         } catch (ModelNotFoundException $e) {

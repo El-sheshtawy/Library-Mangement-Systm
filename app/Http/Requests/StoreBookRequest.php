@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Book;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreBookRequest extends FormRequest
@@ -11,7 +12,8 @@ class StoreBookRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // Authorization logic for creating a book
+        return $this->user()->hasPermission('create-books');
     }
 
     /**
@@ -24,19 +26,15 @@ class StoreBookRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'file' => 'required|mimes:pdf,doc,docx',  
-            'cover_image' => 'required|image',  
-            'size' => 'nullable|numeric',
-            'number_pages' => 'nullable|integer',
             'published_at' => 'nullable|date',
-            'is_approved' => 'boolean',
-            'views_count' => 'integer|min:0',
-            'downloads_count' => 'integer|min:0',
-            'lang' => 'nullable|string',
+            'is_approved' => 'required|boolean',
+            'views_count' => 'nullable|integer',
+            'downloads_count' => 'nullable|integer',
+            'lang' => 'required|string|max:10',
             'category_id' => 'required|exists:categories,id',
-            'user_id' => 'required|exists:users,id',
             'author_id' => 'required|exists:authors,id',
-            'book_series_id' => 'nullable|exists:book_series,id',
+            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Cover image validation
+            'file' => 'nullable|file|mimes:pdf|max:2048', // PDF file validation
         ];
     }
 }

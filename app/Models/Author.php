@@ -34,18 +34,10 @@ class Author extends Model implements HasMedia
     {
         // Profile Image
         $this->registerImageCollection(
-            'profile_image',
+            'author_image',
             true,
             url('/assets/images/static/person.png'),
             public_path('/assets/images/static/person.png')
-        );
-
-        // Additional Image Collection (e.g., Cover Image)
-        $this->registerImageCollection(
-            'cover_image',
-            true,
-            url('/assets/images/static/cover.png'),
-            public_path('/assets/images/static/cover.png')
         );
     }
 }

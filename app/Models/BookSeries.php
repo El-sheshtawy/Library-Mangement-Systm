@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
 
 class BookSeries extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia;
+    use HasFactory, HasImage;
 
     protected $fillable = [
         'title',
@@ -24,8 +24,13 @@ class BookSeries extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('images')
-                    ->singleFile(); ;
+        // Profile Image
+        $this->registerImageCollection(
+            'book_series',
+            true,
+            url('/assets/images/static/book_series.png'),
+            public_path('/assets/images/static/book_series.png')
+        );
     }
 
     public function user()

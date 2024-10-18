@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\API\AuthorController;
+use App\Http\Controllers\API\BookController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\HomePageController;
 use App\Http\Controllers\API\PermissionController;
+use App\Http\Controllers\API\PublicationRequestController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
@@ -26,6 +28,18 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Home Page Route
     Route::get('/', HomePageController::class);
+
+    // Books Routes
+    Route::apiResource('/books', BookController::class);
+
+    // Publication Requests Routes
+    Route::apiResource('/books', BookController::class);
+
+    Route::apiResource('publication-requests', PublicationRequestController::class)->except('update');
+    Route::post('publication-requests/{id}/approve', [PublicationRequestController::class, 'approve'])
+        ->name('publication-requests.approve');
+    Route::post('publication-requests/{id}/reject', [PublicationRequestController::class, 'reject'])
+        ->name('publication-requests.reject');
 
     // Permissions Routes
     Route::apiResource('permissions', PermissionController::class);
