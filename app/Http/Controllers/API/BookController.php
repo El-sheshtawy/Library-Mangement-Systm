@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Requests\StoreBookRequest;
 use App\Jobs\DownloadBookPdf;
-use App\Jobs\GenerateBookPdf;
 use App\Models\Book;
 use App\Http\Resources\BookResource;
 use Illuminate\Support\Facades\Cache;
@@ -30,6 +29,11 @@ class BookController extends Controller
         $paginationSize = request('per_page', 10); // Allow per_page parameter
 
         $booksQuery = Book::with(['category', 'author']);
+
+        // Restrict access for users with the 'user' role
+        if (auth()->user()->hasRole('user')) {
+            $booksQuery->where('user_id', auth()->id());
+        }
 
         // Search functionality
         if ($search) {

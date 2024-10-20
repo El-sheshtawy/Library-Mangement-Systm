@@ -36,7 +36,10 @@ class BookPolicy
      */
     public function update(User $user, Book $book): bool
     {
-        return $user->hasPermission('update-books');
+        // Check if the user has the 'update-books' permission and:
+        // - The user is the owner of the book, or
+        // - The user has a role that allows them to edit any book (e.g., super_admin)
+        return $user->hasPermission('update-books') && ($user->id === $book->user_id || !$user->hasRole('user'));
     }
 
     /**
@@ -44,6 +47,9 @@ class BookPolicy
      */
     public function delete(User $user, Book $book): bool
     {
-        return $user->hasPermission('delete-books');
+        // Check if the user has the 'delete-books' permission and:
+        // - The user is the owner of the book, or
+        // - The user has a role that allows them to delete any book (e.g., super_admin)
+        return $user->hasPermission('delete-books') && ($user->id === $book->user_id || !$user->hasRole('user'));
     }
 }
