@@ -18,19 +18,34 @@ class Book extends Model implements HasMedia
         'published_at',
         'is_approved',
         'lang',
-        'downloads_count',
-        'views_count',
+        'real_views_count',
+        'real_downloads_count',
+        'fake_views_count',
+        'fake_downloads_count',
         'book_series_id',
         'category_id',
         'user_id',
         'author_id',
     ];
 
+    // Automatically assign fake views and downloads on creation
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($book) {
+            // Assign random fake views and downloads when creating the book
+            $book->fake_views_count = rand(3000, 4000); // You can adjust the range
+            $book->fake_downloads_count = rand(3000, 4000); // Adjust the range
+        });
+    }
+
     // Relationships
     public function comments()
     {
         return $this->hasMany(Comment::class);
     }
+
 
     public function downloads()
     {

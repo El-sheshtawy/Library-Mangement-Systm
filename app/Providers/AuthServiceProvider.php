@@ -5,6 +5,7 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 use App\Models\Book;
 use App\Models\Category;
+use App\Models\Download;
 use App\Models\Permission;
 use App\Models\PublicationRequest;
 use App\Models\Role;
@@ -12,6 +13,7 @@ use App\Models\User;
 use App\Models\CategoryGroup;
 use App\Models\BookSeries;
 use App\Policies\BookPolicy;
+use App\Policies\DownloadPolicy;
 use App\Policies\PermissionPolicy;
 use App\Policies\PublicationRequestPolicy;
 use App\Policies\RolePolicy;
@@ -39,6 +41,7 @@ class AuthServiceProvider extends ServiceProvider
         Category::class => CategoryPolicy::class,
         AuthorRequest::class => AuthorRequestPolicy::class,
         BookSeries::class => BookSeriesPolicy::class,
+        Download::class => DownloadPolicy::class,
     ];
 
     /**

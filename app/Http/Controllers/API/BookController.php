@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Requests\StoreBookRequest;
+use App\Jobs\DownloadBookPdf;
+use App\Jobs\GenerateBookPdf;
 use App\Models\Book;
 use App\Http\Resources\BookResource;
 use Illuminate\Support\Facades\Cache;
@@ -19,6 +21,7 @@ class BookController extends Controller
         $category_id = request('category_id');
         $latest = request('latest');
         $mostPopular = request('most_popular');
+        $trending= request('trending');
         $language = request('lang');
         $isApproved = request('is_approved');
         $publisherName = request('publisher_name');
@@ -72,11 +75,18 @@ class BookController extends Controller
             $booksQuery->orderBy('published_at', 'desc');
         }
 
-        // Most popular books
-        if ($mostPopular === 'views') {
-            $booksQuery->orderBy('views_count', 'desc');
+        // Most Trending books (Based on real views or downloads)
+        if ($trending === 'views') {
+            $booksQuery->orderBy('real_views_count', 'desc');
         } elseif ($mostPopular === 'downloads') {
-            $booksQuery->orderBy('downloads_count', 'desc');
+            $booksQuery->orderBy('real_downloads_count', 'desc');
+        }
+
+        // Most popular books (Based on fake views or downloads)
+        if ($mostPopular === 'views') {
+            $booksQuery->orderBy('fake_views_count', 'desc');
+        } elseif ($mostPopular === 'downloads') {
+            $booksQuery->orderBy('fake_downloads_count', 'desc');
         }
 
 
@@ -115,25 +125,21 @@ class BookController extends Controller
         $cacheKey = "book_{$id}";
         $sessionKey = "viewed_books_{$id}";
 
-        // Cache individual book details
         $book = Cache::rememberForever($cacheKey, function () use ($id) {
-            return Book::with(['category', 'author'])->findOrFail($id);
+            return Book::with(['category', 'author', 'comments.user'])->findOrFail($id);
         });
 
-        // Authorization check
         $this->authorize('view', $book);
 
-        // Check if the book has already been viewed in this session
         if (!session()->has($sessionKey)) {
-            // Increment views_count only if not viewed in this session
-            $book->increment('views_count');
-
-            // Store the book ID in the session to prevent duplicate increments
+            $book->increment('real_views_count');
+            $book->increment('fake_views_count');
             session()->put($sessionKey, true);
         }
 
         return new BookResource($book);
     }
+
 
 
     /**
@@ -202,6 +208,26 @@ class BookController extends Controller
         // Clear the cache for a specific book, if provided
         if ($book) {
             Cache::forget("book_{$book->id}");
+        }
+    }
+
+    /**
+     * Dispatch the download job for the book.
+     *
+     * @param Book $book
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function download(Book $book)
+    {
+        try {
+            // Dispatch the job to handle the PDF download in the queue
+            DownloadBookPdf::dispatch($book);
+
+            return response()->json([
+                'message' => 'Your download is being processed and will start shortly.'
+            ], 202); // Return 202 Accepted as the process is queued
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'File not found'], 404);
         }
     }
 }

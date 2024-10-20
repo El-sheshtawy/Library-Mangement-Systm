@@ -17,8 +17,10 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->dateTime('published_at')->nullable();
             $table->boolean('is_approved')->default(false);
-            $table->integer('views_count')->default(0);
-            $table->integer('downloads_count')->default(0);
+            $table->integer('real_views_count')->default(0);
+            $table->integer('real_downloads_count')->default(0);
+            $table->integer('fake_views_count')->default(0);
+            $table->integer('fake_downloads_count')->default(0);
             $table->string('lang')->nullable();
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');

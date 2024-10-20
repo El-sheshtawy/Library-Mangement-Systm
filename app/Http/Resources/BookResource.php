@@ -22,37 +22,72 @@ class BookResource extends JsonResource
             'description' => $this->description,
             'published_at' => $this->published_at,
             'is_approved' => $this->is_approved,
-            'views_count' => $this->views_count,
-            'downloads_count' => $this->downloads_count,
+            'real_views_count' => $this->real_views_count,
+            'real_downloads_count' => $this->real_downloads_count,
+            'fake_views_count' => $this->fake_views_count,
+            'fake_downloads_count' => $this->fake_downloads_count,
             'lang' => $this->lang,
 
             // Optimized category and author loading
-            'category' => Cache::rememberForever('book_' . $this->id . '_category', function () {
-                return [
-                    'id' => $this->category->id,
-                    'name' => $this->category->name,
-                ];
-            }),
-            'author' => Cache::rememberForever('book_' . $this->id . '_author', function () {
-                return [
-                    'id' => $this->author->id,
-                    'name' => $this->author->name,
-                ];
-            }),
+            'category' => $this->getCachedCategory(),
+            'author' => $this->getCachedAuthor(),
 
             // Caching cover image and file URLs
             'cover_image_url' => $this->getCachedMediaUrl('cover_image', 'cover_image_' . $this->id),
+            'cover_image_thumbnail_url' => $this->getCachedMediaUrl('cover_image', 'cover_image_thumb_' . $this->id, 'thumb'),
+
+            // Provide file URL for downloading
             'file_url' => $this->getCachedMediaUrl('file', 'file_url_' . $this->id),
 
             // Provide file extension
-            'file_extension' => Cache::rememberForever('file_extension_' . $this->id, function () {
-                $media = $this->getFirstMedia('file');
-                return $media ? $media->mime_type : null;
-            }),
+            'file_extension' => $this->getCachedFileExtension(),
 
-            // Include thumbnail URL for the cover image
-            'cover_image_thumbnail_url' => $this->getCachedMediaUrl('cover_image', 'cover_image_thumb_' . $this->id, 'thumb'),
+            // Optional download link, ensuring the file exists
+            'download_link' => route('api.books.download', ['book' => $this->id]), // Add the download link
         ];
+    }
+
+    /**
+     * Get cached category data.
+     *
+     * @return array|null
+     */
+    private function getCachedCategory(): ?array
+    {
+        return Cache::rememberForever('book_' . $this->id . '_category', function () {
+            return $this->category ? [
+                'id' => $this->category->id,
+                'name' => $this->category->name,
+            ] : null;
+        });
+    }
+
+    /**
+     * Get cached author data.
+     *
+     * @return array|null
+     */
+    private function getCachedAuthor(): ?array
+    {
+        return Cache::rememberForever('book_' . $this->id . '_author', function () {
+            return $this->author ? [
+                'id' => $this->author->id,
+                'name' => $this->author->name,
+            ] : null;
+        });
+    }
+
+    /**
+     * Get cached file extension.
+     *
+     * @return string|null
+     */
+    private function getCachedFileExtension(): ?string
+    {
+        return Cache::rememberForever('file_extension_' . $this->id, function () {
+            $media = $this->getFirstMedia('file');
+            return $media ? $media->mime_type : null;
+        });
     }
 
     /**

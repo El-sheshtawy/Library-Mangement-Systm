@@ -28,8 +28,6 @@ class StoreBookRequest extends FormRequest
             'description' => 'nullable|string',
             'published_at' => 'nullable|date',
             'is_approved' => 'required|boolean',
-            'views_count' => 'nullable|integer',
-            'downloads_count' => 'nullable|integer',
             'lang' => 'required|string|max:10',
             'category_id' => 'required|exists:categories,id',
             'author_id' => 'required|exists:authors,id',

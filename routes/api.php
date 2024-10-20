@@ -3,6 +3,8 @@
 use App\Http\Controllers\API\AuthorController;
 use App\Http\Controllers\API\BookController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\CommentController;
+use App\Http\Controllers\API\DownloadController;
 use App\Http\Controllers\API\HomePageController;
 use App\Http\Controllers\API\PermissionController;
 use App\Http\Controllers\API\PublicationRequestController;
@@ -31,9 +33,18 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Books Routes
     Route::apiResource('/books', BookController::class);
+    // Book download Route
+    Route::get('/books/{book}/download', [BookController::class, 'download'])->name('api.books.download');
+    // Book comments Routes
+    Route::post('/books/{bookId}/comments', [CommentController::class, 'store']);
+    Route::put('/books/{bookId}/comments/{commentId}', [CommentController::class, 'update']);
+    Route::delete('/books/{bookId}/comments/{commentId}', [CommentController::class, 'destroy']);
+    Route::get('/books/{bookId}/comments', [CommentController::class, 'index']);
 
     // Publication Requests Routes
     Route::apiResource('/books', BookController::class);
+
+    Route::get('/downloads', [DownloadController::class, 'index']);
 
     Route::apiResource('publication-requests', PublicationRequestController::class)->except('update');
     Route::post('publication-requests/{id}/approve', [PublicationRequestController::class, 'approve'])
