@@ -31,7 +31,7 @@ class BookController extends Controller
         $booksQuery = Book::with(['category', 'author']);
 
         // Restrict access for users with the 'user' role
-        if (auth()->user()->hasRole('user')) {
+        if (auth()->user()->role->name === 'super_admin') {
             $booksQuery->where('user_id', auth()->id());
         }
 
@@ -80,16 +80,16 @@ class BookController extends Controller
         }
 
         // Most Trending books (Based on real views or downloads)
-        if ($trending === 'views') {
+        if ($trending === 'trending') {
             $booksQuery->orderBy('real_views_count', 'desc');
-        } elseif ($mostPopular === 'downloads') {
+        } elseif ($mostPopular === 'trending_downloads') {
             $booksQuery->orderBy('real_downloads_count', 'desc');
         }
 
         // Most popular books (Based on fake views or downloads)
-        if ($mostPopular === 'views') {
+        if ($mostPopular === 'popular') {
             $booksQuery->orderBy('fake_views_count', 'desc');
-        } elseif ($mostPopular === 'downloads') {
+        } elseif ($mostPopular === 'popular_downloads') {
             $booksQuery->orderBy('fake_downloads_count', 'desc');
         }
 
